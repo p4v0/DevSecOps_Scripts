@@ -68,7 +68,7 @@ jobs:
           name: snyk-report
           path: snyk-high-critical.json
 
- trivy:
+  trivy:
     name: Trivy Vulnerability Scan
     runs-on: ubuntu-latest
     steps:
