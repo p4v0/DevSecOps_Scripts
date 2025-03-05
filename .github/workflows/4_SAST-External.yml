@@ -11,7 +11,6 @@ on:
   #schedule:
   #  - cron: '0 4 * * 1'  # Corre cada lunes a las 4 AM UTC
 
-
 jobs:
   semgrep:
     name: Semgrep Analysis
@@ -27,7 +26,12 @@ jobs:
         run: semgrep scan --config=p/ci --json > semgrep-report.json || true
 
       - name: Filter high and critical vulnerabilities
-        run: jq '[.results[] | select(.severity == "ERROR" or .severity == "WARNING")]' semgrep-report.json > semgrep-high-critical.json
+        run: |
+          if [ -s semgrep-report.json ]; then
+            jq '[.results[] | select(.severity == "ERROR" or .severity == "WARNING")]' semgrep-report.json > semgrep-high-critical.json
+          else
+            echo "[]" > semgrep-high-critical.json
+          fi
 
       - name: Upload Semgrep Report
         uses: actions/upload-artifact@v4
@@ -51,7 +55,12 @@ jobs:
         run: snyk test --json > snyk-report.json || true
 
       - name: Filter high and critical vulnerabilities
-        run: jq '[.vulnerabilities[] | select(.severity == "high" or .severity == "critical")]' snyk-report.json > snyk-high-critical.json
+        run: |
+          if [ -s snyk-report.json ] && jq -e '.vulnerabilities' snyk-report.json >/dev/null; then
+            jq '[.vulnerabilities[] | select(.severity == "high" or .severity == "critical")]' snyk-report.json > snyk-high-critical.json
+          else
+            echo "[]" > snyk-high-critical.json
+          fi
 
       - name: Upload Snyk Report
         uses: actions/upload-artifact@v4
@@ -68,8 +77,10 @@ jobs:
 
       - name: Install Trivy
         run: |
-          sudo apt-get update && sudo apt-get install -y wget
-          wget -qO- https://github.com/aquasecurity/trivy/releases/latest/download/trivy_$(dpkg --print-architecture).deb | sudo dpkg -i -
+          sudo apt-get update
+          sudo apt-get install -y wget
+          wget -qO trivy.deb https://github.com/aquasecurity/trivy/releases/latest/download/trivy_$(dpkg --print-architecture).deb
+          sudo dpkg -i trivy.deb
 
       - name: Run Trivy
         run: trivy fs --format json --severity HIGH,CRITICAL --output trivy-report.json .
