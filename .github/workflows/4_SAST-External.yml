@@ -68,22 +68,20 @@ jobs:
           name: snyk-report
           path: snyk-high-critical.json
 
-  trivy:
+ trivy:
     name: Trivy Vulnerability Scan
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Trivy
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wget
-          wget -qO trivy.deb https://github.com/aquasecurity/trivy/releases/latest/download/trivy_$(dpkg --print-architecture).deb
-          sudo dpkg -i trivy.deb
-
       - name: Run Trivy
-        run: trivy fs --format json --severity HIGH,CRITICAL --output trivy-report.json .
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          format: "json"
+          output: "trivy-report.json"
+          severity: "HIGH,CRITICAL"
 
       - name: Upload Trivy Report
         uses: actions/upload-artifact@v4
