@@ -1,12 +1,12 @@
 name: External SAST Security Scan
 
 on:
-  push:  # Monitorea cambios en main y ejecuta en PRs 
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+#  push:  # Monitorea cambios en main y ejecuta en PRs 
+#    branches:
+#      - main
+#  pull_request:
+#    branches:
+#      - main
   workflow_dispatch:  # Permite ejecución manual
   #schedule:
   #  - cron: '0 4 * * 1'  # Corre cada lunes a las 4 AM UTC

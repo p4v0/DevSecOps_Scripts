@@ -1,0 +1,33 @@
+name: External SAST Security Scan
+
+on:
+  push:  # Monitorea cambios en main y ejecuta en PRs 
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:  # Permite ejecución manual
+  #schedule:
+  #  - cron: '0 4 * * 1'  # Corre cada lunes a las 4 AM UTC
+
+jobs:
+  semgrep:
+    name: Semgrep Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Semgrep
+        run: pip install semgrep
+
+      - name: Run Semgrep
+        #run: semgrep scan --config=p/ci --json > semgrep-report.json || true
+        run: semgrep scan --config "p/javascript" --error
+
+      - name: Upload Semgrep Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-report
+          path: semgrep-high-critical.json
