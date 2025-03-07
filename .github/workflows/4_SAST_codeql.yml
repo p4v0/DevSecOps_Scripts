@@ -96,8 +96,6 @@ jobs:
       uses: github/codeql-action/analyze@v3
       with:
         category: "/language:${{matrix.language}}"
-        with:
-          category: "/language:${{matrix.language}}"
 
     # 📝 Verificar la ubicación real del archivo SARIF generado
     - name: Find SARIF Report
