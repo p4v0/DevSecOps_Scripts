@@ -99,7 +99,7 @@ jobs:
 
     # 📝 Guarda los resultados del análisis como un artefacto descargable
     - name: Upload CodeQL Results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4.6.1
       with:
         name: CodeQL-Results-${{ matrix.language }}
         path: security-results.sarif
