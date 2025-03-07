@@ -93,17 +93,14 @@ jobs:
         exit 1
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
-      with:
-        category: "/language:${{matrix.language}}"
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{matrix.language}}"
+          output: results
 
-    # 📝 Verificar la ubicación real del archivo SARIF generado
-    - name: Find SARIF Report
-      run: find . -name "*.sarif"
-
-    # 📤 Subir el archivo SARIF encontrado
     - name: Upload CodeQL Results
       uses: actions/upload-artifact@v4.6.1
       with:
         name: CodeQL-Results-${{ matrix.language }}
-        path: "**/*.sarif"
+        path: "results/*.sarif"
+    
