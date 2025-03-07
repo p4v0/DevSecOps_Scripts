@@ -23,8 +23,8 @@ jobs:
         run: pip install semgrep
 
       - name: Run Semgrep
-        #run: semgrep scan --config=p/ci --json > semgrep-report.json || true
-        run: semgrep scan --config "p/javascript" --error
+        run: semgrep scan --config=p/ci --json > semgrep-report.json || true
+        #run: semgrep scan --config "p/javascript" --error
 
       - name: Upload Semgrep Report
         uses: actions/upload-artifact@v4
