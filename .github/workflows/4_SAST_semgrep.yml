@@ -1,4 +1,4 @@
-name: External SAST Security Scan
+name: External SAST con semgrep
 
 on:
   push:  # Monitorea cambios en main y ejecuta en PRs 
@@ -28,6 +28,7 @@ jobs:
 
       - name: Upload Semgrep Report
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: semgrep-report
           path: semgrep-high-critical.json
