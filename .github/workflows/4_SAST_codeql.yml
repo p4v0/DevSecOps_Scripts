@@ -98,11 +98,14 @@ jobs:
         category: "/language:${{matrix.language}}"
         with:
           category: "/language:${{matrix.language}}"
-          output: .github/results/security-results.sarif
 
-    # 📝 Guarda los resultados del análisis como un artefacto descargable
+    # 📝 Verificar la ubicación real del archivo SARIF generado
+    - name: Find SARIF Report
+      run: find . -name "*.sarif"
+
+    # 📤 Subir el archivo SARIF encontrado
     - name: Upload CodeQL Results
       uses: actions/upload-artifact@v4.6.1
       with:
         name: CodeQL-Results-${{ matrix.language }}
-        path: .github/results/security-results.sarif
+        path: "**/*.sarif"
