@@ -96,10 +96,13 @@ jobs:
       uses: github/codeql-action/analyze@v3
       with:
         category: "/language:${{matrix.language}}"
+        with:
+          category: "/language:${{matrix.language}}"
+          output: .github/results/security-results.sarif
 
     # 📝 Guarda los resultados del análisis como un artefacto descargable
     - name: Upload CodeQL Results
       uses: actions/upload-artifact@v4.6.1
       with:
         name: CodeQL-Results-${{ matrix.language }}
-        path: security-results.sarif
+        path: .github/results/security-results.sarif
