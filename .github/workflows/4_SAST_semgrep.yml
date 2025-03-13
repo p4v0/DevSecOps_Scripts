@@ -27,7 +27,8 @@ jobs:
                                                                               # sin detener el pipeline
         #run: semgrep scan --config=p/ci --config=auto --error --json > semgrep-report.json # --config=auto detección de los lenguajes del proyecto y escaneo según eso, json exporta a json
         #run: semgrep scan --config=p/ci --config=auto --error --json | jq '[.results[] | select(.extra.impact == "MEDIUM" or .extra.impact == "HIGH")]' > semgrep-report.json # solo hallazgos de impacto high o medium
-        run: semgrep scan --config=p/ci --config=auto --error --json | jq '[.results[] | select(.extra.impact and (.extra.impact == "HIGH" or .extra.impact == "MEDIUM"))]' > semgrep-report.json
+        #run: semgrep scan --config=p/ci --config=auto --error --json | jq '[.results[] | select(.extra.impact and (.extra.impact == "HIGH" or .extra.impact == "MEDIUM"))]' > semgrep-report.json
+        run: semgrep scan --config=p/ci --config=auto --error --json | jq '[.results[].extra.impact]'
 
 
       - name: Upload Semgrep Report
