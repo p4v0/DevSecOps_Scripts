@@ -23,17 +23,24 @@ jobs:
         run: pip install semgrep
 
       - name: Run Semgrep
-        #semgrep scan --config=p/ci || true # -config=p/ci solo escanea CI/CD, sin evaluar lenguaje
-                                            # || true evita que devuelva error parando el pipeline, sólo cuando quiero informar resultado
-                                            # --config=auto detección de los lenguajes del proyecto y escaneo según eso
-                                            # --json > semgrep-report.json --json > semgrep-report.json
-                                            # | jq '[.results[] | select(.extra.metadata.impact == "HIGH")]': filtrar json con solo hallazgos de impacto high
-                                            # --error detiene el pipeline si hay hallazgos (el deber ser)
+            #semgrep scan: escanear con semgrep 
+            # -config=p/ci solo escanea CI/CD, sin evaluar lenguaje
+            # || true evita que devuelva código de error (<>0) parando el pipeline, sólo cuando quiero informar resultado
+            # --config=auto detección de los lenguajes del proyecto y escaneo según eso
+            # --json > semgrep-report.json --json > semgrep-report.json
+            # Sin --error, Semgrep siempre devuelve 0, sin importar si hay findings o no.
+            # Con --error || true, Semgrep primero devuelve 1 si hay findings, pero || true lo fuerza a 0
+              # Si quieres capturar el código de salida original de Semgrep y hacer algo condicional con él en un script 
+              # o en el workflow, usar --error || true es mejor porque te permite ver que hubo findings antes de que se "ignore" el error.
+            # | jq '[.results[] | select(.extra.metadata.impact == "HIGH")]': filtrar json con solo hallazgos de impacto high
+              # jq al estar en pipe con semgrep sobreescribe el código de salida con su propio código (0) y afecta el resultado de semgrep en el pipeline, entonces:
+              # con tee guarda la salida completa en semgrep-full.json, sin alterar el código de salida.
+              # y con ${PIPESTATUS[0]} recupera el código de salida de semgrep y lo usa como código final del script.        
         run: |
-          semgrep scan --config=p/ci --config=auto --json | tee semgrep-full.json | jq '[.results[] | select(.extra.metadata.impact == "MEDIUM" or .extra.metadata.impact == "HIGH")]' > semgrep-report.json
+          semgrep scan --config=p/ci --config=auto --error --json | tee semgrep-full.json | jq '[.results[] | select(.extra.metadata.impact == "MEDIUM" or .extra.metadata.impact == "HIGH")]' > semgrep-report.json
           exit ${PIPESTATUS[0]}
       
-
+      # exportar artefacto con el json de resultados de semgrep
       - name: Upload Semgrep Report
         uses: actions/upload-artifact@v4
         if: always()
