@@ -32,4 +32,4 @@ jobs:
         if: always()
         with:
           name: semgrep-report
-          path: semgrep-high-critical.json
+          path: semgrep-report.json
