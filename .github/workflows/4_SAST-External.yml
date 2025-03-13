@@ -12,32 +12,6 @@ on:
   #  - cron: '0 4 * * 1'  # Corre cada lunes a las 4 AM UTC
 
 jobs:
-  semgrep:
-    name: Semgrep Analysis
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install Semgrep
-        run: pip install semgrep
-
-      - name: Run Semgrep
-        run: semgrep scan --config=p/ci --json > semgrep-report.json || true
-
-      - name: Filter high and critical vulnerabilities
-        run: |
-          if [ -s semgrep-report.json ]; then
-            jq '[.results[] | select(.severity == "ERROR" or .severity == "WARNING")]' semgrep-report.json > semgrep-high-critical.json
-          else
-            echo "[]" > semgrep-high-critical.json
-          fi
-
-      - name: Upload Semgrep Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: semgrep-report
-          path: semgrep-high-critical.json
 
   snyk:
     name: Snyk Security Scan
@@ -67,24 +41,3 @@ jobs:
         with:
           name: snyk-report
           path: snyk-high-critical.json
-
-  trivy:
-    name: Trivy Vulnerability Scan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Run Trivy
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: "fs"
-          format: "json"
-          output: "trivy-report.json"
-          severity: "HIGH,CRITICAL"
-
-      - name: Upload Trivy Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: trivy-report
-          path: trivy-report.json

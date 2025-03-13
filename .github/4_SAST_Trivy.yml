@@ -1,0 +1,34 @@
+name: External SAST con semgrep
+
+on:
+  push:  # Monitorea cambios en main y ejecuta en PRs 
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:  # Permite ejecución manual
+  #schedule:
+  #  - cron: '0 4 * * 1'  # Corre cada lunes a las 4 AM UTC
+
+jobs:
+  trivy:
+    name: Trivy Vulnerability Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          format: "json"
+          output: "trivy-report.json"
+          severity: "HIGH,CRITICAL"
+
+      - name: Upload Trivy Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-report
+          path: trivy-report.json
