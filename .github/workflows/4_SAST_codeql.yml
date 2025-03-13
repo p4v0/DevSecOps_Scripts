@@ -92,40 +92,15 @@ jobs:
         echo '  make release'
         exit 1
 
-    # - name: Perform CodeQL Analysis
-    #   uses: github/codeql-action/analyze@v3
-    #   with:
-    #       category: "/language:${{matrix.language}}"
-    #       output: results
-
-    # - name: Upload CodeQL Results
-    #   uses: actions/upload-artifact@v4.6.1
-    #   with:
-    #     name: CodeQL-Results-${{ matrix.language }}
-    #     path: "results/*.sarif"
-    
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
       with:
           category: "/language:${{matrix.language}}"
           output: results
 
-    - name: Convert SARIF to JSON
-      run: |
-          codeql database interpret-results \
-            --format=json \
-            --output=results/codeql-results.json \
-            --database=codeql-database
-
-    - name: Upload CodeQL Results (SARIF)
+    - name: Upload CodeQL Results
       uses: actions/upload-artifact@v4.6.1
       with:
         name: CodeQL-Results-${{ matrix.language }}
         path: "results/*.sarif"
-
-    - name: Upload CodeQL Results (JSON)
-      uses: actions/upload-artifact@v4.6.1
-      with:
-        name: CodeQL-Results-${{ matrix.language }}-JSON
-        path: "results/codeql-results.json"
 
