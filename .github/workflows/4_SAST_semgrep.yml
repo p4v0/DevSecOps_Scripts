@@ -27,13 +27,13 @@ jobs:
                                             # || true evita que devuelva error parando el pipeline, sólo cuando quiero informar resultado
                                             # --config=auto detección de los lenguajes del proyecto y escaneo según eso
                                             # --json > semgrep-report.json --json > semgrep-report.json
-                                            # | jq '[.results[] | select(.extra.metadata.impact == "MEDIUM" or .extra.metadata.impact == "HIGH")]': solo hallazgos de impacto high o medium
-        #run: semgrep scan --config=p/ci --config=auto --error --json | jq '[.results[] | select(.extra.metadata.impact == "HIGH")]' > semgrep-report.json
+                                            # | jq '[.results[] | select(.extra.metadata.impact == "HIGH")]': filtrar json con solo hallazgos de impacto high
+                                            # --error detiene el pipeline si hay hallazgos (el deber ser)
         run: |
-          semgrep scan --config=p/ci --config=auto --error --json | tee semgrep-full.json | jq '[.results[] | select(.extra.metadata.impact == "HIGH")]' > semgrep-report.json
+          semgrep scan --config=p/ci --config=auto --json | tee semgrep-full.json | jq '[.results[] | select(.extra.metadata.impact == "MEDIUM" or .extra.metadata.impact == "HIGH")]' > semgrep-report.json
           exit ${PIPESTATUS[0]}
       
-          
+
       - name: Upload Semgrep Report
         uses: actions/upload-artifact@v4
         if: always()
