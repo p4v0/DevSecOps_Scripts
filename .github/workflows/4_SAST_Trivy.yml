@@ -22,7 +22,7 @@ jobs:
       - name: Run Trivy
         uses: aquasecurity/trivy-action@0.29.0
         with:
-          scan-type: "fs"
+          scan-type: "library"
           format: "json"
           output: "trivy-report.json"
           severity: "HIGH,CRITICAL"
