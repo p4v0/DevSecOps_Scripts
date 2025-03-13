@@ -23,14 +23,17 @@ jobs:
         run: pip install semgrep
 
       - name: Run Semgrep
-        #run: semgrep scan --config=p/ci --json > semgrep-report.json || true # solo escanea CI/CD y || true evita que devuelva error parando el pipeline, sólo cuando quiero informar resultado
-                                                                              # sin detener el pipeline
-        #run: semgrep scan --config=p/ci --config=auto --error --json > semgrep-report.json # --config=auto detección de los lenguajes del proyecto y escaneo según eso, json exporta a json
-        #run: semgrep scan --config=p/ci --config=auto --error --json | jq '[.results[] | select(.extra.metadata.impact == "MEDIUM" or .extra.metadata.impact == "HIGH")]' > semgrep-report.json # solo hallazgos de impacto high o medium
-        run: semgrep scan --config=p/ci --config=auto --error --json | jq '[.results[] | select(.extra.metadata.impact == "HIGH")]' > semgrep-report.json
-
-
-
+        #semgrep scan --config=p/ci || true # -config=p/ci solo escanea CI/CD, sin evaluar lenguaje
+                                            # || true evita que devuelva error parando el pipeline, sólo cuando quiero informar resultado
+                                            # --config=auto detección de los lenguajes del proyecto y escaneo según eso
+                                            # --json > semgrep-report.json --json > semgrep-report.json
+                                            # | jq '[.results[] | select(.extra.metadata.impact == "MEDIUM" or .extra.metadata.impact == "HIGH")]': solo hallazgos de impacto high o medium
+        #run: semgrep scan --config=p/ci --config=auto --error --json | jq '[.results[] | select(.extra.metadata.impact == "HIGH")]' > semgrep-report.json
+        run: |
+          semgrep scan --config=p/ci --config=auto --error --json | tee semgrep-full.json | jq '[.results[] | select(.extra.metadata.impact == "HIGH")]' > semgrep-report.json
+          exit ${PIPESTATUS[0]}
+      
+          
       - name: Upload Semgrep Report
         uses: actions/upload-artifact@v4
         if: always()
