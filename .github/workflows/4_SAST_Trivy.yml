@@ -1,4 +1,4 @@
-name: External SAST con semgrep
+name: External SAST con Trivy
 
 on:
   push:  # Monitorea cambios en main y ejecuta en PRs 
