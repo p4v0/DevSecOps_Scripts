@@ -1,10 +1,11 @@
 name: External SAST con semgrep
 
 on:
-  push:  # Monitorea cambios en main y ejecuta en PRs 
+  push:  # Se ejecuta en push a ramas main y develop
     branches:
       - main
-  pull_request:
+      - develop
+  pull_request:  # se ejecuta en pull requests de main
     branches:
       - main
   workflow_dispatch:  # Permite ejecución manual
